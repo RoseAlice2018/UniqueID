@@ -6,10 +6,10 @@
 std::atomic<uint32_t> sequenceCounter(0);
 std::mutex sequenceMutex; //用于同步访问的互斥锁
 
-void resetSequenceCounter(){
-    std::lock_guard<std::mutex> lock(sequenceMutex); //获取互斥锁
-    sequenceCounter.store(0); //重置计数器为0
-}
+// void resetSequenceCounter(){
+//     std::lock_guard<std::mutex> lock(sequenceMutex); //获取互斥锁
+//     sequenceCounter.store(0); //重置计数器为0
+// }
 
 
 //UUID struct
@@ -29,11 +29,20 @@ struct CustomUUID{
 
         // 获取当前序列值，这里使用原子操作包保证线程安全
         uint32_t sequence_val = ++sequenceCounter;
-        if(sequence_val > 0xFFFFFF)
+        while(sequence_val > 0xFFFFFF)
         {
             //SequenceCounter 超出24位 重置
-            resetSequenceCounter();
-            sequence_val = ++sequenceCounter;
+            // resetSequenceCounter();
+            uint32_t expected = sequence_val;
+            if(sequenceCounter.compare_exchange_strong(expected, 0))
+            {
+                sequence_val = ++sequenceCounter;
+                break;
+            }
+            else 
+            {
+                sequence_val = ++ sequenceCounter;
+            }
         }
         uuid.sequence = sequence_val & 0xFFFFFFF; //Sequence 只保留24位
 
