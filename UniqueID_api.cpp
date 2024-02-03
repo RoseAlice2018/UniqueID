@@ -57,7 +57,11 @@ struct CustomUUID{
     }
 };
 
+//Distributed UUID
+struct Distributed_UUID
+{
 
+};
 
 const uint64_t Free_ID_Alloc(UNIQUEID_REGISTER_TYPE Register_Type)
 {
@@ -75,3 +79,13 @@ const std::vector<uint64_t> Free_ID_Alloc(UNIQUEID_REGISTER_TYPE Register_Type, 
     }
     return ans;
 };
+
+const uint64_t Distributed_Free_ID_Alloc(UNIQUEID_REGISTER_TYPE register_type)
+{
+
+}
+
+const std::vector<uint64_t> Distributed_Free_ID_Alloc(UNIQUEID_REGISTER_TYPE register_type, int32_t alloc_num)
+{
+
+}
